@@ -20,6 +20,25 @@ services:
       TARKOV_CALCULATOR_API_DB_USER: tarkov_calculator_api
       TARKOV_CALCULATOR_API_DB_PASS: tarkov_calculator_api
       TARKOV_CALCULATOR_API_DB_BASE: tarkov_calculator_api
+  service:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+      target: prod
+    image: tarkov_calculator_api:${TARKOV_CALCULATOR_API_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python -m tarkov_calculator_api --service
+    environment:
+      TARKOV_CALCULATOR_API_DB_HOST: tarkov_calculator_api-db
+      TARKOV_CALCULATOR_API_DB_PORT: 5432
+      TARKOV_CALCULATOR_API_DB_USER: tarkov_calculator_api
+      TARKOV_CALCULATOR_API_DB_PASS: tarkov_calculator_api
+      TARKOV_CALCULATOR_API_DB_BASE: tarkov_calculator_api
 
   db:
     image: postgres:13.8-bullseye

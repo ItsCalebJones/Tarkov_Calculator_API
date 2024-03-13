@@ -24,7 +24,7 @@ RUN apt-get purge -y \
 COPY . /app/src/
 RUN poetry install --only main
 
-CMD ["/usr/local/bin/python", "-m", "tarkov_calculator_api"]
+CMD ["/usr/local/bin/python", "-m", "tarkov_calculator_api", "--api"]
 
 FROM prod as dev
 

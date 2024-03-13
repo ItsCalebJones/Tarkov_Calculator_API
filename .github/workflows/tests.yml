@@ -47,6 +47,21 @@ jobs:
       run: poetry run mypy .
   pytest:
     runs-on: ubuntu-latest
+    services:
+
+      tarkov_calculator_api-db:
+        image: postgres:13.8-bullseye
+        env:
+          POSTGRES_PASSWORD: tarkov_calculator_api
+          POSTGRES_USER: tarkov_calculator_api
+          POSTGRES_DB: tarkov_calculator_api
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        ports:
+        - 5432:5432
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -61,3 +76,4 @@ jobs:
       run: poetry run pytest -vv --cov="tarkov_calculator_api" .
       env:
         TARKOV_CALCULATOR_API_HOST: "0.0.0.0"
+        TARKOV_CALCULATOR_API_DB_HOST: localhost

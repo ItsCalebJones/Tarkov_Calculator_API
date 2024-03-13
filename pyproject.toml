@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tarkov_calculator_api"
-version = "0.1.1"
+version = "0.2.0"
 description = ""
 authors = [
 
@@ -15,18 +15,17 @@ python = "^3.9"
 fastapi = "^0.100.0"
 uvicorn = { version = "^0.22.0", extras = ["standard"] }
 gunicorn = "^21.2.0"
-pydantic = "^2"
-pydantic-settings = "^2"
+pydantic = { version = "^1", extras=["dotenv"] }
 yarl = "^1.9.2"
 ujson = "^5.8.0"
 SQLAlchemy = {version = "^2.0.18", extras = ["asyncio"]}
 alembic = "^1.11.1"
-aiosqlite = "^0.19.0"
+asyncpg = {version = "^0.28.0", extras = ["sa"]}
 aiofiles = "^23.1.0"
 httptools = "^0.6.0"
-fastapi-utilities = "^0.2.0"
 requests = "^2.31.0"
 types-requests = "^2.31.0.20240311"
+
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.1"
@@ -68,7 +67,7 @@ filterwarnings = [
 ]
 env = [
     "TARKOV_CALCULATOR_API_ENVIRONMENT=pytest",
-    "TARKOV_CALCULATOR_API_DB_FILE=test_db.sqlite3",
+    "TARKOV_CALCULATOR_API_DB_BASE=tarkov_calculator_api_test",
 ]
 
 [fastapi-template.options]
@@ -80,18 +79,18 @@ ci_type = "github"
 enable_migrations = "True"
 enable_taskiq = "None"
 enable_kube = "None"
-kube_name = "Tarkov-Calculator-API"
-enable_routers = "True"
+kube_name = "tarkov-calculator-api"
+enable_routers = "None"
 enable_kafka = "None"
 enable_loguru = "None"
 traefik_labels = "None"
-add_dummy = "True"
+add_dummy = "None"
 orm = "sqlalchemy"
 self_hosted_swagger = "True"
 prometheus_enabled = "None"
 sentry_enabled = "None"
 otlp_enabled = "None"
-pydanticv1 = "None"
+pydanticv1 = "True"
 gunicorn = "True"
 add_users = "None"
 cookie_auth = "None"

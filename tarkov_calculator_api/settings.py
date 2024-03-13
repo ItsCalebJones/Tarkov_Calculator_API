@@ -2,7 +2,7 @@ import enum
 from pathlib import Path
 from tempfile import gettempdir
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseSettings
 from yarl import URL
 
 TEMP_DIR = Path(gettempdir())
@@ -39,8 +39,13 @@ class Settings(BaseSettings):
 
     log_level: LogLevel = LogLevel.INFO
     # Variables for the database
-    db_file: Path = TEMP_DIR / "db.sqlite3"
+    db_host: str = "localhost"
+    db_port: int = 5432
+    db_user: str = "tarkov_calculator_api"
+    db_pass: str = "tarkov_calculator_api"
+    db_base: str = "tarkov_calculator_api"
     db_echo: bool = False
+
     hostname: str = ""
     tarkov_market_api_key: str = ""
 
@@ -52,15 +57,18 @@ class Settings(BaseSettings):
         :return: database URL.
         """
         return URL.build(
-            scheme="sqlite+aiosqlite",
-            path=f"///{self.db_file}",
+            scheme="postgresql+asyncpg",
+            host=self.db_host,
+            port=self.db_port,
+            user=self.db_user,
+            password=self.db_pass,
+            path=f"/{self.db_base}",
         )
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_prefix="TARKOV_CALCULATOR_API_",
-        env_file_encoding="utf-8",
-    )
+    class Config:
+        env_file = ".env"
+        env_prefix = "TARKOV_CALCULATOR_API_"
+        env_file_encoding = "utf-8"
 
 
 settings = Settings()

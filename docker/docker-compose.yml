@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+      target: prod
+    image: tarkov_calculator_api:${TARKOV_CALCULATOR_API_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TARKOV_CALCULATOR_API_HOST: 0.0.0.0
+      TARKOV_CALCULATOR_API_DB_HOST: tarkov_calculator_api-db
+      TARKOV_CALCULATOR_API_DB_PORT: 5432
+      TARKOV_CALCULATOR_API_DB_USER: tarkov_calculator_api
+      TARKOV_CALCULATOR_API_DB_PASS: tarkov_calculator_api
+      TARKOV_CALCULATOR_API_DB_BASE: tarkov_calculator_api
+
+  db:
+    image: postgres:13.8-bullseye
+    hostname: tarkov_calculator_api-db
+    environment:
+      POSTGRES_PASSWORD: "tarkov_calculator_api"
+      POSTGRES_USER: "tarkov_calculator_api"
+      POSTGRES_DB: "tarkov_calculator_api"
+    volumes:
+    - tarkov_calculator_api-db-data-postgres:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U tarkov_calculator_api
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  migrator:
+    image: tarkov_calculator_api:${TARKOV_CALCULATOR_API_VERSION:-latest}
+    restart: "no"
+    command: alembic upgrade head
+    environment:
+      TARKOV_CALCULATOR_API_DB_HOST: tarkov_calculator_api-db
+      TARKOV_CALCULATOR_API_DB_PORT: 5432
+      TARKOV_CALCULATOR_API_DB_USER: tarkov_calculator_api
+      TARKOV_CALCULATOR_API_DB_PASS: tarkov_calculator_api
+      TARKOV_CALCULATOR_API_DB_BASE: tarkov_calculator_api
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+
+volumes:
+  tarkov_calculator_api-db-data-postgres:
+    name: tarkov_calculator_api-db-data-postgres

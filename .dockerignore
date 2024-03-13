@@ -1,6 +1,6 @@
 ### Python template
 
-deploy/
+docker/
 .idea/
 .vscode/
 .git/

@@ -1,5 +1,4 @@
 """tarkov_calculator_api models."""
-
 import pkgutil
 from pathlib import Path
 

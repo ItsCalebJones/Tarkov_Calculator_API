@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: tarkov_calculator_api:${TARKOV_CALCULATOR_API_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    environment:
+      TARKOV_CALCULATOR_API_HOST: 0.0.0.0
+      TARKOV_CALCULATOR_API_DB_FILE: /db_data/db.sqlite3
+    command: ["/usr/local/bin/python", "-m", "tarkov_calculator_api", "--api"]
+    volumes:
+    - tarkov_calculator_api-db-data:/db_data/
+  service:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: tarkov_calculator_api:${TARKOV_CALCULATOR_API_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    environment:
+      TARKOV_CALCULATOR_API_HOST: 0.0.0.0
+      TARKOV_CALCULATOR_API_DB_FILE: /db_data/db.sqlite3
+    command: ["/usr/local/bin/python", "-m", "tarkov_calculator_api", "--service"]
+    volumes:
+    - tarkov_calculator_api-db-data:/db_data/
+  migrator:
+    image: tarkov_calculator_api:${TARKOV_CALCULATOR_API_VERSION:-latest}
+    restart: "no"
+    command: alembic upgrade head
+    environment:
+      TARKOV_CALCULATOR_API_DB_FILE: /db_data/new_db.sqlite3
+    volumes:
+    - tarkov_calculator_api-db-data:/db_data/
+
+
+
+volumes:
+  tarkov_calculator_api-db-data:
+    name: tarkov_calculator_api-db-data

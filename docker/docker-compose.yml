@@ -8,11 +8,16 @@ services:
       target: prod
     image: tarkov_calculator_api:${TARKOV_CALCULATOR_API_VERSION:-latest}
     restart: always
+    ports:
+    - "8000:8000"
     env_file:
     - .env
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      # Adds current directory as volume.
+    - .:/app/src/
     environment:
       TARKOV_CALCULATOR_API_HOST: 0.0.0.0
       TARKOV_CALCULATOR_API_DB_HOST: tarkov_calculator_api-db
@@ -20,6 +25,7 @@ services:
       TARKOV_CALCULATOR_API_DB_USER: tarkov_calculator_api
       TARKOV_CALCULATOR_API_DB_PASS: tarkov_calculator_api
       TARKOV_CALCULATOR_API_DB_BASE: tarkov_calculator_api
+      TARKOV_CALCULATOR_API_RELOAD: "True"
   service:
     build:
       context: .

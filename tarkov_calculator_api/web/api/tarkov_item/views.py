@@ -1,6 +1,6 @@
-from typing import List, Optional
+from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.param_functions import Depends
 
 from tarkov_calculator_api.db.dao.tarkov_item_dao import TarkovItemDAO
@@ -31,12 +31,20 @@ async def get_tarkov_item_models(
 async def get_tarkov_item_model_by_id(
     tarkov_item_id: int,
     tarkov_item_dao: TarkovItemDAO = Depends(),
-) -> Optional[TarkovItem]:
+) -> TarkovItem:
     """
     Retrieve a single tarkov_item object from the database.
 
     :param tarkov_item_id: id of tarkov_item object.
     :param tarkov_item_dao: DAO for tarkov_item models.
     :return: tarkov_item object from database.
+    :raises HTTPException: If the tarkov_item is not found in the database.
     """
-    return await tarkov_item_dao.get_tarkov_item_by_id(tarkov_item_id)
+    tarkov_item = await tarkov_item_dao.get_tarkov_item_by_id(tarkov_item_id)
+    status_code_not_found = 404
+    if tarkov_item is None:
+        raise HTTPException(
+            status_code=status_code_not_found,
+            detail="Tarkov item not found",
+        )
+    return tarkov_item

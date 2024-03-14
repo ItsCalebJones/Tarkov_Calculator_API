@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 class TarkovItemModelDTO(BaseModel):
@@ -12,7 +12,9 @@ class TarkovItemModelDTO(BaseModel):
     name: str
     price: int
     base_price: int
-    model_config = ConfigDict()
+
+    class Config:
+        orm_mode = True
 
 
 class TarkovItemModelInputDTO(BaseModel):

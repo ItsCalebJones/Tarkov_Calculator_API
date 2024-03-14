@@ -99,6 +99,6 @@ class TarkovItemDAO:
         :param item_id: ID of the TarkovItem.
         :return: TarkovItem if found, None otherwise.
         """
-        query = select(TarkovItem).where(TarkovItem.id == item_id)
+        query = select(TarkovItem).filter(TarkovItem.id == item_id)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()

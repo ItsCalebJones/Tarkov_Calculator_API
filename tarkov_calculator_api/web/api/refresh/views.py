@@ -1,3 +1,5 @@
+import logging
+
 import requests
 from fastapi import APIRouter, BackgroundTasks, Depends
 
@@ -5,6 +7,9 @@ from tarkov_calculator_api.db.dao.tarkov_item_dao import TarkovItemDAO
 from tarkov_calculator_api.settings import settings
 
 router = APIRouter()
+
+# Create a logger
+logger = logging.getLogger(__name__)
 
 
 async def refresh_background(tarkov_item_dao: TarkovItemDAO) -> None:
@@ -14,8 +19,10 @@ async def refresh_background(tarkov_item_dao: TarkovItemDAO) -> None:
     Args:
         tarkov_item_dao (TarkovItemDAO): The data access object for Tarkov items.
     """
+    logger.info("Starting to refresh euro and dollar prices.")
     await refresh_euro(tarkov_item_dao)
     await refresh_dollar(tarkov_item_dao)
+    logger.info("Refreshed euro and dollar prices.")
 
 
 async def refresh_euro(tarkov_item_dao: TarkovItemDAO) -> None:
@@ -30,7 +37,7 @@ async def refresh_euro(tarkov_item_dao: TarkovItemDAO) -> None:
         f"https://api.tarkov-market.app/api/v1/item?q=euro&x-api-key={settings.tarkov_market_api_key}",
     )
     if euro_response.status_code != requests.status_codes.codes.ok:
-        print(
+        logger.error(
             f"Error with {euro_response.url} {euro_response.status_code} {euro_response.text}",
         )
         return
@@ -62,7 +69,7 @@ async def refresh_dollar(tarkov_item_dao: TarkovItemDAO) -> None:
         f"https://api.tarkov-market.app/api/v1/item?q=dollar&x-api-key={settings.tarkov_market_api_key}",
     )
     if dollar_response.status_code != requests.status_codes.codes.ok:
-        print(
+        logger.error(
             f"Error with {dollar_response.url} {dollar_response.status_code} {dollar_response.text}",
         )
         return

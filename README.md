@@ -1,6 +1,6 @@
-# tarkov_calculator_api
+# Tarkov Calculator API
 
-This project was generated using fastapi_template.
+This is the backend web service to provide live Tarkov Market data for https://eft-calculator.com
 
 ## Poetry
 
